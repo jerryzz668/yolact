@@ -128,6 +128,21 @@ dataset_base = Config({
     'label_map': None
 })
 
+my_custom_dataset = dataset_base.copy({
+    'name': 'My Dataset',
+
+    'train_images': 'path_to_training_images',
+    'train_info':   'path_to_training_annotation',
+
+    'valid_images': 'path_to_validation_images',
+    'valid_info':   'path_to_validation_annotation',
+
+    'has_gt': True,
+    'class_names': ('aokeng', 'aotuhen', 'baisezaodian', 'daowen', 'guashang', 'guashang1', 'heidian', 'pengshang', 'yise'),
+    
+    'label_map': { 0: 1,  1:  2,  2:  3,  3:  4,  4:  5,  5:  6,  6:  7, 7: 8, 8: 9}
+})
+
 coco2014_dataset = dataset_base.copy({
     'name': 'COCO 2014',
     
@@ -657,15 +672,18 @@ yolact_base_config = coco_base_config.copy({
     'name': 'yolact_base',
 
     # Dataset stuff
-    'dataset': coco2017_dataset,
-    'num_classes': len(coco2017_dataset.class_names) + 1,
+    'dataset': my_custom_dataset,
+    'num_classes': 10
+    #'num_classes': len(coco2017_dataset.class_names) + 1,
 
     # Image Size
-    'max_size': 550,
+    'max_size': 640,
     
     # Training params
-    'lr_steps': (280000, 600000, 700000, 750000),
-    'max_iter': 800000,
+    # 'lr_steps': (280000, 600000, 700000, 750000),
+    # 'max_iter': 800000,
+    'lr_steps': (28000, 60000, 70000, 75000),
+    'max_iter': 80000,
     
     # Backbone Settings
     'backbone': resnet101_backbone.copy({
