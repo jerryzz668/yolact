@@ -31,11 +31,12 @@ Some examples from our YOLACT base model (33.5 fps on a Titan Xp and 29.8 mAP on
 # Installation
  - Clone this repository and enter it:
    ```Shell
-   git clone https://github.com/dbolya/yolact.git
+   git clone https://gitee.com/jerryzz668/yolact.git
    cd yolact
    ```
  - Set up the environment using one of the following methods:
    - Using [Anaconda](https://www.anaconda.com/distribution/)
+     
      - Run `conda env create -f environment.yml`
    - Manually with pip
      - Set up a Python3 environment (e.g., using virtenv).
