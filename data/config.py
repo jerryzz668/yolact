@@ -140,7 +140,7 @@ my_custom_dataset = dataset_base.copy({
     'has_gt': True,
     'class_names': ('aokeng', 'aotuhen', 'baisezaodian', 'daowen', 'guashang', 'guashang1', 'heidian', 'pengshang', 'yise'),
     
-    'label_map': { 0: 1,  1:  2,  2:  3,  3:  4,  4:  5,  5:  6,  6:  7, 7: 8, 8: 9}
+    'label_map': {0: 1,  1:  2,  2:  3,  3:  4,  4:  5,  5:  6,  6:  7, 7: 8, 8: 9}
 })
 
 coco2014_dataset = dataset_base.copy({
@@ -673,11 +673,11 @@ yolact_base_config = coco_base_config.copy({
 
     # Dataset stuff
     'dataset': my_custom_dataset,
-    'num_classes': 10
-    #'num_classes': len(coco2017_dataset.class_names) + 1,
+    # 'num_classes': 10,
+    'num_classes': len(my_custom_dataset.class_names) + 1,
 
     # Image Size
-    'max_size': 640,
+    'max_size': 550,
     
     # Training params
     # 'lr_steps': (280000, 600000, 700000, 750000),
