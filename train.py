@@ -54,7 +54,7 @@ parser.add_argument('--save_folder', default='weights/',
                     help='Directory for saving checkpoint models.')
 parser.add_argument('--log_folder', default='logs/',
                     help='Directory for saving logs.')
-parser.add_argument('--config', default=None,
+parser.add_argument('--config', default=yolact_base_config,
                     help='The config object to use.')
 parser.add_argument('--save_interval', default=10000, type=int,
                     help='The number of iterations between saving the model.')

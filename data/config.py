@@ -59,14 +59,6 @@ COCO_LABEL_MAP = { 1:  1,  2:  2,  3:  3,  4:  4,  5:  5,  6:  6,  7:  7,  8:  8
 # ----------------------- CONFIG CLASS ----------------------- #
 
 class Config(object):
-    """
-    Holds the configuration for anything you want it to.
-    To get the currently active config, call get_cfg().
-
-    To use, just do cfg.x instead of cfg['x'].
-    I made this because doing cfg['x'] all the time is dumb.
-    """
-
     def __init__(self, config_dict):
         for key, val in config_dict.items():
             self.__setattr__(key, val)
@@ -127,21 +119,22 @@ dataset_base = Config({
     # If not specified, this just assumes category ids start at 1 and increase sequentially.
     'label_map': None
 })
-
+#-------------修改以下-----------#
 my_custom_dataset = dataset_base.copy({
     'name': 'My Dataset',
 
-    'train_images': 'path_to_training_images',
-    'train_info':   'path_to_training_annotation',
+    'train_images': '/home/jerry/Documents/yolact/R_coco/train2017',
+    'train_info':   '/home/jerry/Documents/yolact/R_coco/annotations/instances_train2017.json',
 
-    'valid_images': 'path_to_validation_images',
-    'valid_info':   'path_to_validation_annotation',
+    'valid_images': '/home/jerry/Documents/yolact/R_coco/val2017',
+    'valid_info':   '/home/jerry/Documents/yolact/R_coco/annotations/instances_val2017.json',
 
     'has_gt': True,
-    'class_names': ('aokeng', 'aotuhen', 'baisezaodian', 'daowen', 'guashang', 'guashang1', 'heidian', 'pengshang', 'yise'),
+    'class_names': ('guashang', 'daowen', '3ddaowen', 'pengshang'),
     
-    'label_map': {0: 1,  1:  2,  2:  3,  3:  4,  4:  5,  5:  6,  6:  7, 7: 8, 8: 9}
+    'label_map': {0: 1,  1:  2,  2:  3,  3:  4}
 })
+#-------------修改以上-----------#
 
 coco2014_dataset = dataset_base.copy({
     'name': 'COCO 2014',
@@ -324,58 +317,6 @@ mask_type = Config({
     # This is denoted as fc-mask in the paper.
     # Parameters: mask_size, use_gt_bboxes
     'direct': 0,
-
-    # Lincomb produces coefficients as the output of each pred module then uses those coefficients
-    # to linearly combine features from a prototype network to create image-sized masks.
-    # Parameters:
-    #   - masks_to_train (int): Since we're producing (near) full image masks, it'd take too much
-    #                           vram to backprop on every single mask. Thus we select only a subset.
-    #   - mask_proto_src (int): The input layer to the mask prototype generation network. This is an
-    #                           index in backbone.layers. Use to use the image itself instead.
-    #   - mask_proto_net (list<tuple>): A list of layers in the mask proto network with the last one
-    #                                   being where the masks are taken from. Each conv layer is in
-    #                                   the form (num_features, kernel_size, **kwdargs). An empty
-    #                                   list means to use the source for prototype masks. If the
-    #                                   kernel_size is negative, this creates a deconv layer instead.
-    #                                   If the kernel_size is negative and the num_features is None,
-    #                                   this creates a simple bilinear interpolation layer instead.
-    #   - mask_proto_bias (bool): Whether to include an extra coefficient that corresponds to a proto
-    #                             mask of all ones.
-    #   - mask_proto_prototype_activation (func): The activation to apply to each prototype mask.
-    #   - mask_proto_mask_activation (func): After summing the prototype masks with the predicted
-    #                                        coeffs, what activation to apply to the final mask.
-    #   - mask_proto_coeff_activation (func): The activation to apply to the mask coefficients.
-    #   - mask_proto_crop (bool): If True, crop the mask with the predicted bbox during training.
-    #   - mask_proto_crop_expand (float): If cropping, the percent to expand the cropping bbox by
-    #                                     in each direction. This is to make the model less reliant
-    #                                     on perfect bbox predictions.
-    #   - mask_proto_loss (str [l1|disj]): If not None, apply an l1 or disjunctive regularization
-    #                                      loss directly to the prototype masks.
-    #   - mask_proto_binarize_downsampled_gt (bool): Binarize GT after dowsnampling during training?
-    #   - mask_proto_normalize_mask_loss_by_sqrt_area (bool): Whether to normalize mask loss by sqrt(sum(gt))
-    #   - mask_proto_reweight_mask_loss (bool): Reweight mask loss such that background is divided by
-    #                                           #background and foreground is divided by #foreground.
-    #   - mask_proto_grid_file (str): The path to the grid file to use with the next option.
-    #                                 This should be a numpy.dump file with shape [numgrids, h, w]
-    #                                 where h and w are w.r.t. the mask_proto_src convout.
-    #   - mask_proto_use_grid (bool): Whether to add extra grid features to the proto_net input.
-    #   - mask_proto_coeff_gate (bool): Add an extra set of sigmoided coefficients that is multiplied
-    #                                   into the predicted coefficients in order to "gate" them.
-    #   - mask_proto_prototypes_as_features (bool): For each prediction module, downsample the prototypes
-    #                                 to the convout size of that module and supply the prototypes as input
-    #                                 in addition to the already supplied backbone features.
-    #   - mask_proto_prototypes_as_features_no_grad (bool): If the above is set, don't backprop gradients to
-    #                                 to the prototypes from the network head.
-    #   - mask_proto_remove_empty_masks (bool): Remove masks that are downsampled to 0 during loss calculations.
-    #   - mask_proto_reweight_coeff (float): The coefficient to multiple the forground pixels with if reweighting.
-    #   - mask_proto_coeff_diversity_loss (bool): Apply coefficient diversity loss on the coefficients so that the same
-    #                                             instance has similar coefficients.
-    #   - mask_proto_coeff_diversity_alpha (float): The weight to use for the coefficient diversity loss.
-    #   - mask_proto_normalize_emulate_roi_pooling (bool): Normalize the mask loss to emulate roi pooling's affect on loss.
-    #   - mask_proto_double_loss (bool): Whether to use the old loss in addition to any special new losses.
-    #   - mask_proto_double_loss_alpha (float): The alpha to weight the above loss.
-    #   - mask_proto_split_prototypes_by_head (bool): If true, this will give each prediction head its own prototypes.
-    #   - mask_proto_crop_with_pred_box (bool): Whether to crop with the predicted box or the gt box.
     'lincomb': 1,
 })
 
@@ -677,13 +618,13 @@ yolact_base_config = coco_base_config.copy({
     'num_classes': len(my_custom_dataset.class_names) + 1,
 
     # Image Size
-    'max_size': 550,
+    'max_size': 128,  #-------------修改-----------#
     
     # Training params
     # 'lr_steps': (280000, 600000, 700000, 750000),
     # 'max_iter': 800000,
-    'lr_steps': (28000, 60000, 70000, 75000),
-    'max_iter': 80000,
+    'lr_steps': (8000, 12000, 15000, 18000),  #-------------修改-----------#
+    'max_iter': 20000,  #-------------修改-----------#
     
     # Backbone Settings
     'backbone': resnet101_backbone.copy({
